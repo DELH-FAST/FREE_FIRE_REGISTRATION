@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html>
+<!-- index.html --><!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Fire Summer Tournament</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      color: #facc15;
+    }
+    .form-container {
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 20px #facc15;
+    }
+    label, select, input {
+      display: block;
+      margin: 1rem 0;
+      width: 100%;
+    }
+    input, select {
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.5rem;
+    }
+    button {
+      padding: 1rem;
+      background: #facc15;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .player-section {
+      border-top: 1px solid #444;
+      margin-top: 1rem;
+      padding-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Free Fire Summer Tournament</h1>
+  <div class="form-container">
+    <label for="type">Participation Type:</label>
+    <select id="type">
+      <option value="solo">Solo</option>
+      <option value="squad">Squad</option>
+    </select><div id="players"></div>
+
+<button onclick="submitForm()">Submit</button>
+
+  </div>  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCuNiUy7CtFNKpdz-6-FWDpZmLfS0MrIjM",
+  authDomain: "free-fire-summer-tournament.firebaseapp.com",
+ databaseURL: "https://free-fire-summer-tournament-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "free-fire-summer-tournament",
+  storageBucket: "free-fire-summer-tournament.appspot.com",
+  messagingSenderId: "189395981403",
+  appId: "1:189395981403:web:65dba0e293e51f0fa29b7e",
+  measurementId: "G-KZSE08V3PQ"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const typeSelect = document.getElementById('type');
+    const playersDiv = document.getElementById('players');
+
+    typeSelect.addEventListener('change', updateForm);
+
+    function createPlayerFields(index) {
+      return `
+        <div class="player-section">
+          <label>Player ${index + 1} Name</label>
+          <input type="text" id="p${index}_name" required>
+          <label>In-Game Name</label>
+          <input type="text" id="p${index}_ign" required>
+          <label>UID</label>
+          <input type="number" id="p${index}_uid" required>
+          <label>Mobile</label>
+          <input type="number" id="p${index}_phone" required>
+        </div>
+      `;
+    }
+
+    function updateForm() {
+      const type = typeSelect.value;
+      playersDiv.innerHTML = '';
+      const count = type === 'solo' ? 1 : 4;
+      for (let i = 0; i < count; i++) {
+        playersDiv.innerHTML += createPlayerFields(i);
+      }
+    }
+
+    updateForm();
+
+    window.submitForm = function () {
+      const type = typeSelect.value;
+      const data = { type };
+
+      for (let i = 0; i < (type === 'solo' ? 1 : 4); i++) {
+        data[`p${i}`] = {
+          name: document.getElementById(`p${i}_name`).value,
+          ign: document.getElementById(`p${i}_ign`).value,
+          uid: document.getElementById(`p${i}_uid`).value,
+          phone: document.getElementById(`p${i}_phone`).value
+        };
+      }
+
+      push(ref(db, 'registrations'), data)
+        .then(() => {
+          alert("Registration submitted!");
+          updateForm();
+        })
+        .catch((error) => alert("Error: " + error.message));
+    }
+  </script>
+  <button onclick="goToAdmin()" style="margin-top: 1rem; background: #333; color: #facc15;">
+  🔐 Admin Panel
+</button>
+
+<script>
+  function goToAdmin() {
+    const password = prompt("Enter Admin Password:");
+    if (password === "FFDATA") {
+      window.location.href = "admin.html";
+    } else {
+      alert("❌ Incorrect password!");
+    }
+  }
+</script></body>
+</html>
