@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FF Players</title>
+  <style>
+    body { font-family: Arial, padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #00c853; color: white; }
+    button { margin-bottom: 20px; padding: 10px 15px; background: red; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Registered Free Fire Players</h2>
+  <button onclick="deleteAll()">Delete All Records</button>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>In-Game Name</th><th>UID</th></tr>
+    </thead>
+    <tbody id="playerTable"></tbody>
+  </table>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiQWtgY1GZvSj0IekOpAKLxDvI8XHLNQ0",
+      authDomain: "free-fire-registration.firebaseapp.com",
+      projectId: "free-fire-registration",
+      storageBucket: "free-fire-registration.firebasestorage.app",
+      messagingSenderId: "929719079093",
+      appId: "1:929719079093:web:6c505dba28f80a305eeefc",
+      measurementId: "G-5DT8HRYX84"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const tableBody = document.getElementById("playerTable");
+
+    async function loadPlayers() {
+      const querySnapshot = await getDocs(collection(db, "ffPlayers"));
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${data.name}</td><td>${data.ign}</td><td>${data.uid}</td>`;
+        tableBody.appendChild(row);
+      });
+    }
+
+    loadPlayers();
+
+    window.deleteAll = async function () {
+      if (!confirm("Are you sure you want to delete all records?")) return;
+      const querySnapshot = await getDocs(collection(db, "ffPlayers"));
+      for (const docSnap of querySnapshot.docs) {
+        await deleteDoc(doc(db, "ffPlayers", docSnap.id));
+      }
+      alert("✅ All records deleted.");
+      location.reload();
+    };
+  </script>
+</body>
+</html>

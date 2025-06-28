@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FF Registration</title>
+  <style>
+    input, button {
+      width: 100%; padding: 10px; margin: 10px 0;
+    }
+    button { background: green; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <h2>Free Fire Registration</h2>
+
+  <input type="text" id="name" placeholder="Your Name" required>
+  <input type="text" id="ign" placeholder="In-Game Name" required>
+  <input type="number" id="uid" placeholder="UID" required>
+  <button onclick="submitData()">Submit</button>
+
+  <button onclick="goToTable()" style="background:blue;">View Registrations</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiQWtgY1GZvSj0IekOpAKLxDvI8XHLNQ0",
+      authDomain: "free-fire-registration.firebaseapp.com",
+      projectId: "free-fire-registration",
+      storageBucket: "free-fire-registration.firebasestorage.app",
+      messagingSenderId: "929719079093",
+      appId: "1:929719079093:web:6c505dba28f80a305eeefc",
+      measurementId: "G-5DT8HRYX84"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 🔁 Make functions global by assigning to `window`
+    window.submitData = async function () {
+      const name = document.getElementById("name").value.trim();
+      const ign = document.getElementById("ign").value.trim();
+      const uid = document.getElementById("uid").value.trim();
+
+      if (!name || !ign || !uid) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "ffPlayers"), { name, ign, uid });
+        alert("✅ Registered!");
+        window.location.href = "save.html";
+      } catch (err) {
+        console.error("Error:", err);
+        alert("❌ Error submitting data.");
+      }
+    };
+
+    window.goToTable = function () {
+      const pass = prompt("Enter password:");
+      if (pass === "FFDATA") {
+        window.location.href = "save.html";
+      } else {
+        alert("❌ Incorrect password.");
+      }
+    };
+  </script>
+</body>
+</html>
